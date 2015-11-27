@@ -1,5 +1,9 @@
 """
-Utility functions for pyk.
+Utility functions for the pyk toolkit.
+
+@author: Michael Hausenblas, http://mhausenblas.info/#i
+@since: 2015-11-27
+@status: init
 """
 
 import yaml
