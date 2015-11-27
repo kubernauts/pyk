@@ -13,19 +13,23 @@ import os
 import time
 import pprint
 from pyk import toolkit
+from pyk import util
 
 DEBUG = False
 
-def test_list_nodes():
+def test_init_app():
     """
-    Tests if I can list all nodes in the cluster.
+    Tests if I can init a simple app, comprising a
+    a single-replica RC backed pod and a service.
     """
     print(80*'=')
-    print('= Test case: list all nodes of the cluster\n\n')
-    response = pyk_client.execute_operation(method='GET', ops_path='/nodes').json()
-    print('kind: %s' %(response['kind']))
-    for nodes in response['items']:
-        pprint.pprint(nodes['status'])
+    print('= Test case: init a simple RC\n\n')
+    # First, we create the RC from a YAML manifest:
+    response, rc_url = pyk_client.create_rc(manifest_filename='manifest/nginx-webserver-rc.yaml')
+    rc = pyk_client.describe_resource(rc_url)
+    pprint.pprint(rc.json())
+    # Next, we create the service from a YAML manifest:
+    # TBD
 
 def test_list_pods():
     """
@@ -33,15 +37,27 @@ def test_list_pods():
     """
     print(80*'=')
     print('= Test case: list all running pods\n\n')
-    response = pyk_client.execute_operation(method='GET', ops_path='/pods').json()
+    response = pyk_client.execute_operation(method='GET', ops_path='/api/v1/pods').json()
+    print('kind: %s' %(response['kind']))
+    for nodes in response['items']:
+        pprint.pprint(nodes['status'])
+
+def test_list_nodes():
+    """
+    Tests if I can list all nodes in the cluster.
+    """
+    print(80*'=')
+    print('= Test case: list all nodes of the cluster\n\n')
+    response = pyk_client.execute_operation(method='GET', ops_path='/api/v1/nodes').json()
     print('kind: %s' %(response['kind']))
     for nodes in response['items']:
         pprint.pprint(nodes['status'])
 
 # If you add a test case above, don't forget to add it here as well:
 tests = {
-    'list nodes' : test_list_nodes,
-    'list pods' : test_list_pods
+    'init app' : test_init_app,
+    'list pods' : test_list_pods,
+    'list nodes' : test_list_nodes
 }
 
 if __name__ == '__main__':

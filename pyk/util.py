@@ -7,6 +7,7 @@ Utility functions for the pyk toolkit.
 """
 
 import yaml
+import json 
 
 def load_yaml(filename):
     """
@@ -14,4 +15,17 @@ def load_yaml(filename):
     """
     with open(filename) as f:
         ydoc = yaml.safe_load(f.read())
-    ydoc
+    return (ydoc, serialize_tojson(ydoc))
+
+def serialize_yaml_tofile(filename, resource):
+    """
+    Serializes a K8S resource to YAML-formatted file.
+    """
+    with open(filename) as f:
+        f.write(yaml.dump(resource, default_flow_style=False))
+
+def serialize_tojson(resource):
+    """
+    Serializes a K8S resource to JSON-formatted string.
+    """
+    return json.dumps(resource)
