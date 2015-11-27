@@ -21,18 +21,18 @@ class KubeHTTPClient(object):
            - `api_server`: The URL (IP or FQHN and port) of the Kubernetes API server to use, defaults to `http://localhost:8080`
         """
         self.kube_version = kube_version
-        self.api_server = ''.join(api_server, K8S_V1_API_BASE_PATH)
+        self.api_server = ''.join([api_server, KubeHTTPClient.K8S_V1_API_BASE_PATH])
 
-    def execute_operation(self, method='GET', ops_path):
+    def execute_operation(self, method='GET', ops_path=''):
         """
         Executes a Kubernetes operation using the specified method against a path
         and returns a JSON-encoded response (if any).
 
         :Parameters:
            - `method`: The HTTP method to use, defaults to `GET`
-           - `path`: The path of the operation, for example, `/events` which would result in an overall: `GET /api/v1/events`
+           - `ops_path`: The path of the operation, for example, `/events` which would result in an overall: `GET /api/v1/events`
         """
-        operation_path_URL = ''.join(self.api_server, ops_path)
+        operation_path_URL = ''.join([self.api_server, ops_path])
         res = requests.request(method, operation_path_URL)
         res.json()
 
