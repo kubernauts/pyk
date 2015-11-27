@@ -32,7 +32,7 @@ class KubeHTTPClient(object):
            - `method`: The HTTP method to use, defaults to `GET`
            - `path`: The path of the operation, for example, `/events` which would result in an overall: `GET /api/v1/events`
         """
-        operation_path_URL = ''.join(api_server, ops_path)
+        operation_path_URL = ''.join(self.api_server, ops_path)
         res = requests.request(method, operation_path_URL)
         res.json()
 
