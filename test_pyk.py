@@ -12,8 +12,8 @@ import sys
 import os
 import time
 import pprint
-import time
 import logging
+import json
 
 from pyk import toolkit
 from pyk import util
@@ -34,19 +34,42 @@ def test_init_app():
     # First, we create the RC from a YAML manifest:
     _, rc_url = pyk_client.create_rc(manifest_filename='manifest/nginx-webserver-rc.yaml')
     rc = pyk_client.describe_resource(rc_url)
-    pprint.pprint(rc.json())
+    if DEBUG: pprint.pprint(rc.json())
     
     # Next, we create the service from a YAML manifest:
     _, svc_url = pyk_client.create_svc(manifest_filename='manifest/webserver-svc.yaml')
     svc = pyk_client.describe_resource(svc_url)
-    pprint.pprint(svc.json())
+    if DEBUG: pprint.pprint(svc.json())
     
     # See if the service endpoint has come up
+    _list_endpoints()
+    
+    if DEBUG:
+        print('kind: %s' %(endpoints['kind']))
+        for nodes in endpoints['items']:
+            pprint.pprint(nodes['metadata'])
+            pprint.pprint(nodes['subsets'])
+
+def _list_endpoints():
+    """
+    Helper function that prints the endpoint paths to addresses info.
+    """
+    endpoints2address = dict()
     endpoints = pyk_client.execute_operation(method='GET', ops_path='/api/v1/namespaces/default/endpoints').json()
-    print('kind: %s' %(endpoints['kind']))
-    for nodes in endpoints['items']:
-        pprint.pprint(nodes['metadata'])
-        pprint.pprint(nodes['subsets'])
+    logging.info('Found following endpoints: ')
+    for ep in endpoints['items']:
+        eppath = ''
+        epaddress = ''
+        for metadata_entry in ep['metadata']:
+            if metadata_entry == 'selfLink':
+                eppath = ep['metadata'][metadata_entry]
+                break
+        for subsets_entry in ep['subsets']:
+            epaddress = json.dumps(subsets_entry, indent=2, sort_keys=True)
+            break
+        endpoints2address[eppath] = epaddress
+    for k, v in endpoints2address.iteritems():
+        logging.info('%s ->\n%s' %(k, v))
 
 def test_init_destroy_app():
     """
@@ -60,29 +83,30 @@ def test_init_destroy_app():
     # First, we create the RC from a YAML manifest:
     _, rc_url = pyk_client.create_rc(manifest_filename='manifest/nginx-webserver-rc.yaml')
     rc = pyk_client.describe_resource(rc_url)
-    pprint.pprint(rc.json())
+    if DEBUG: pprint.pprint(rc.json())
     
     # Next, we create the service from a YAML manifest:
     _, svc_url = pyk_client.create_svc(manifest_filename='manifest/webserver-svc.yaml')
     svc = pyk_client.describe_resource(svc_url)
-    pprint.pprint(svc.json())
+    if DEBUG: pprint.pprint(svc.json())
     
     # See if the service endpoint has come up
     time.sleep(2)
     endpoints = pyk_client.execute_operation(method='GET', ops_path='/api/v1/namespaces/default/endpoints').json()
-    print('kind: %s' %(endpoints['kind']))
-    for nodes in endpoints['items']:
-        pprint.pprint(nodes['metadata'])
-        pprint.pprint(nodes['subsets'])
+    if DEBUG:
+        print('kind: %s' %(endpoints['kind']))
+        for nodes in endpoints['items']:
+            pprint.pprint(nodes['metadata'])
+            pprint.pprint(nodes['subsets'])
         
     # Now, tear down the whole thing
     zero_rc = pyk_client.scale_rc(manifest_filename='manifest/nginx-webserver-rc.yaml', namespace='default', num_replicas=0)
     delete_svc = pyk_client.delete_resource(svc_url)
-    pprint.pprint(delete_svc.json())
+    if DEBUG: pprint.pprint(delete_svc.json())
     print('Waiting a bit for things to settle ...')
     time.sleep(5)
     delete_rc = pyk_client.delete_resource(rc_url)
-    pprint.pprint(delete_rc.json())
+    if DEBUG: pprint.pprint(delete_rc.json())
 
 def test_list_pods():
     """

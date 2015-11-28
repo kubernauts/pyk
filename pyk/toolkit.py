@@ -10,7 +10,6 @@ import logging
 import requests
 from pyk import util
 
-
 class ResourceCRUDException(Exception):
     pass
 
