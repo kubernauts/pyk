@@ -12,10 +12,15 @@ import sys
 import os
 import time
 import pprint
+import time
+import logging
+
 from pyk import toolkit
 from pyk import util
 
 DEBUG = False
+
+logging.getLogger("requests").setLevel(logging.WARNING)
 
 def test_init_app():
     """
@@ -23,20 +28,30 @@ def test_init_app():
     a single-replica RC backed pod and a service.
     """
     print(80*'=')
-    print('= Test case: init a simple RC\n\n')
+    print('= Test case: init a simple RC\n')
+    
     # First, we create the RC from a YAML manifest:
     response, rc_url = pyk_client.create_rc(manifest_filename='manifest/nginx-webserver-rc.yaml')
     rc = pyk_client.describe_resource(rc_url)
     pprint.pprint(rc.json())
+    
     # Next, we create the service from a YAML manifest:
     # TBD
+    
+    # Now, tear down: after waiting a bit, deleting the RC and service
+    zero_rc = pyk_client.scale_rc(manifest_filename='manifest/nginx-webserver-rc.yaml', namespace='default', num_replicas=0)
+    print('Waiting a bit for things to settle ...')
+    time.sleep(5)
+    delete_rc = pyk_client.delete_resource(rc_url)
+    pprint.pprint(delete_rc.json())
+
 
 def test_list_pods():
     """
     Tests if I can list all pods running in the cluster.
     """
     print(80*'=')
-    print('= Test case: list all running pods\n\n')
+    print('= Test case: list all running pods\n')
     response = pyk_client.execute_operation(method='GET', ops_path='/api/v1/pods').json()
     print('kind: %s' %(response['kind']))
     for nodes in response['items']:
@@ -47,7 +62,7 @@ def test_list_nodes():
     Tests if I can list all nodes in the cluster.
     """
     print(80*'=')
-    print('= Test case: list all nodes of the cluster\n\n')
+    print('= Test case: list all nodes of the cluster\n')
     response = pyk_client.execute_operation(method='GET', ops_path='/api/v1/nodes').json()
     print('kind: %s' %(response['kind']))
     for nodes in response['items']:

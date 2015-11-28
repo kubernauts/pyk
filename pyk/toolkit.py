@@ -11,6 +11,9 @@ import requests
 from pyk import util
 
 
+class ResourceCRUDException(Exception):
+    pass
+
 class KubeHTTPClient(object):
     """
     Provides communication primitives for the Kubernetes API
@@ -57,14 +60,25 @@ class KubeHTTPClient(object):
 
     def describe_resource(self, resource_path):
         """
-        Describes a resource based on its URL.
+        Describes a resource based on its resource path (the URL path modulo host part).
 
         :Parameters:
-           - `resource_path`: The path of the resource, for example, `/api/v1/namespaces/default/replicationcontrollers/webserver-rc`
+           - `resource_path`: The path of the resource to describe, for example, `/api/v1/namespaces/default/replicationcontrollers/webserver-rc`
         """
         res = self.execute_operation(method='GET', ops_path=resource_path)
         return res
-    
+
+    def delete_resource(self, resource_path):
+        """
+        Deletes a resource based on its resource path (the URL path modulo host part).
+
+        :Parameters:
+           - `resource_path`: The path of the resource to delete, for example, `/api/v1/namespaces/default/replicationcontrollers/webserver-rc`
+        """
+        res = self.execute_operation(method='DELETE', ops_path=resource_path)
+        logging.info('Deleted resource %s' %(resource_path))
+        return res
+
     def create_rc(self, manifest_filename, namespace='default'):
         """
         Creates an RC based on a manifest.
@@ -77,6 +91,31 @@ class KubeHTTPClient(object):
         logging.debug('%s' %(rc_manifest_json))
         create_rc_path = ''.join(['/api/v1/namespaces/', namespace, '/replicationcontrollers'])
         res = self.execute_operation(method='POST', ops_path=create_rc_path, payload=rc_manifest_json)
-        rc_url = res.json()['metadata']['selfLink']
+        try:
+            rc_url = res.json()['metadata']['selfLink']
+        except KeyError:
+            raise ResourceCRUDException(''.join(['Sorry, can not create the RC: ', rc_manifest['metadata']['name'], '. Maybe it exists already?']))
         logging.info('From %s I created the RC "%s" at %s' %(manifest_filename, rc_manifest['metadata']['name'], rc_url))
+        return (res, rc_url)
+
+    def scale_rc(self, manifest_filename, namespace='default', num_replicas=0):
+        """
+        Changes the replicas of an RC based on a manifest.
+        Note that it defaults to 0, meaning to effectively disable this RC.
+
+        :Parameters:
+           - `manifest_filename`: The manifest file containing the ReplicationController definition, for example: `manifest/nginx-webserver-rc.yaml`
+           - `namespace`: In which namespace the RC is, defaulting to `default`
+           - `num_replicas`: How many copies of the pods that match the selector are supposed to run
+        """
+        rc_manifest, rc_manifest_json = util.load_yaml(filename=manifest_filename)
+        logging.debug('%s' %(rc_manifest_json))
+        rc_path = ''.join(['/api/v1/namespaces/', namespace, '/replicationcontrollers/', rc_manifest['metadata']['name']])
+        rc_manifest['spec']['replicas'] = num_replicas
+        res = self.execute_operation(method='PUT', ops_path=rc_path, payload=util.serialize_tojson(rc_manifest))
+        try:
+            rc_url = res.json()['metadata']['selfLink']
+        except KeyError:
+            raise ResourceCRUDException(''.join(['Sorry, can not scale the RC: ', rc_manifest['metadata']['name']]))
+        logging.info('I scaled the RC "%s" at %s to %d replicas' %(rc_manifest['metadata']['name'], rc_url, num_replicas))
         return (res, rc_url)
