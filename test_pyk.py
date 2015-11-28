@@ -24,11 +24,12 @@ logging.getLogger("requests").setLevel(logging.WARNING)
 
 def test_init_app():
     """
-    Tests if I can init a simple app, comprising a
-    a single-replica RC backed pod and a service.
+    Tests if I can deploy a simple Web app, comprising a
+    single-replica RC backed pod that runs an nginx Web server 
+    and a service for it.
     """
     print(80*'=')
-    print('= Test case: init a simple RC\n')
+    print('= Test case: init a simple app\n')
     
     # First, we create the RC from a YAML manifest:
     _, rc_url = pyk_client.create_rc(manifest_filename='manifest/nginx-webserver-rc.yaml')
@@ -40,10 +41,34 @@ def test_init_app():
     svc = pyk_client.describe_resource(svc_url)
     pprint.pprint(svc.json())
     
-    # Let's give it some time and see if the service endpoint has come up
-    for idx in range(10):
-        sys.stdout.write('.')
-        time.sleep(1)
+    # See if the service endpoint has come up
+    endpoints = pyk_client.execute_operation(method='GET', ops_path='/api/v1/namespaces/default/endpoints').json()
+    print('kind: %s' %(endpoints['kind']))
+    for nodes in endpoints['items']:
+        pprint.pprint(nodes['metadata'])
+        pprint.pprint(nodes['subsets'])
+
+def test_init_destroy_app():
+    """
+    Tests if I can deploy a simple Web app, comprising a
+    single-replica RC backed pod that runs an nginx Web server 
+    and a service for it and then tear it down again.
+    """
+    print(80*'=')
+    print('= Test case: init a simple app and tear it down again\n')
+    
+    # First, we create the RC from a YAML manifest:
+    _, rc_url = pyk_client.create_rc(manifest_filename='manifest/nginx-webserver-rc.yaml')
+    rc = pyk_client.describe_resource(rc_url)
+    pprint.pprint(rc.json())
+    
+    # Next, we create the service from a YAML manifest:
+    _, svc_url = pyk_client.create_svc(manifest_filename='manifest/webserver-svc.yaml')
+    svc = pyk_client.describe_resource(svc_url)
+    pprint.pprint(svc.json())
+    
+    # See if the service endpoint has come up
+    time.sleep(2)
     endpoints = pyk_client.execute_operation(method='GET', ops_path='/api/v1/namespaces/default/endpoints').json()
     print('kind: %s' %(endpoints['kind']))
     for nodes in endpoints['items']:
@@ -58,7 +83,6 @@ def test_init_app():
     time.sleep(5)
     delete_rc = pyk_client.delete_resource(rc_url)
     pprint.pprint(delete_rc.json())
-
 
 def test_list_pods():
     """
@@ -85,6 +109,7 @@ def test_list_nodes():
 # If you add a test case above, don't forget to add it here as well:
 tests = {
     'init app' : test_init_app,
+    'init destroy app' : test_init_destroy_app,
     'list pods' : test_list_pods,
     'list nodes' : test_list_nodes
 }
