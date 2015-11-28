@@ -31,15 +31,29 @@ def test_init_app():
     print('= Test case: init a simple RC\n')
     
     # First, we create the RC from a YAML manifest:
-    response, rc_url = pyk_client.create_rc(manifest_filename='manifest/nginx-webserver-rc.yaml')
+    _, rc_url = pyk_client.create_rc(manifest_filename='manifest/nginx-webserver-rc.yaml')
     rc = pyk_client.describe_resource(rc_url)
     pprint.pprint(rc.json())
     
     # Next, we create the service from a YAML manifest:
-    # TBD
+    _, svc_url = pyk_client.create_svc(manifest_filename='manifest/webserver-svc.yaml')
+    svc = pyk_client.describe_resource(svc_url)
+    pprint.pprint(svc.json())
     
-    # Now, tear down: after waiting a bit, deleting the RC and service
+    # Let's give it some time and see if the service endpoint has come up
+    for idx in range(10):
+        sys.stdout.write('.')
+        time.sleep(1)
+    endpoints = pyk_client.execute_operation(method='GET', ops_path='/api/v1/namespaces/default/endpoints').json()
+    print('kind: %s' %(endpoints['kind']))
+    for nodes in endpoints['items']:
+        pprint.pprint(nodes['metadata'])
+        pprint.pprint(nodes['subsets'])
+        
+    # Now, tear down the whole thing
     zero_rc = pyk_client.scale_rc(manifest_filename='manifest/nginx-webserver-rc.yaml', namespace='default', num_replicas=0)
+    delete_svc = pyk_client.delete_resource(svc_url)
+    pprint.pprint(delete_svc.json())
     print('Waiting a bit for things to settle ...')
     time.sleep(5)
     delete_rc = pyk_client.delete_resource(rc_url)

@@ -17,3 +17,5 @@ spec:
       containers:
       - image: nginx:1.9.7
         name: nginx
+        ports:
+          - containerPort: 80

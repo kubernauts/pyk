@@ -119,3 +119,23 @@ class KubeHTTPClient(object):
             raise ResourceCRUDException(''.join(['Sorry, can not scale the RC: ', rc_manifest['metadata']['name']]))
         logging.info('I scaled the RC "%s" at %s to %d replicas' %(rc_manifest['metadata']['name'], rc_url, num_replicas))
         return (res, rc_url)
+
+    def create_svc(self, manifest_filename, namespace='default'):
+        """
+        Creates a service based on a manifest.
+
+        :Parameters:
+           - `manifest_filename`: The manifest file containing the service definition, for example: `manifest/webserver-svc.yaml`
+           - `namespace`: In which namespace the service should be created, defaults to, well, `default`
+        """
+        svc_manifest, svc_manifest_json  = util.load_yaml(filename=manifest_filename)
+        logging.debug('%s' %(svc_manifest_json))
+        create_svc_path = ''.join(['/api/v1/namespaces/', namespace, '/services'])
+        res = self.execute_operation(method='POST', ops_path=create_svc_path, payload=svc_manifest_json)
+        try:
+            svc_url = res.json()['metadata']['selfLink']
+        except KeyError:
+            raise ResourceCRUDException(''.join(['Sorry, can not create the service: ', svc_manifest['metadata']['name'], '. Maybe it exists already?']))
+        logging.info('From %s I created the service "%s" at %s' %(manifest_filename, svc_manifest['metadata']['name'], svc_url))
+        return (res, svc_url)
+

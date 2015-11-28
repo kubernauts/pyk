@@ -65,4 +65,5 @@ Above runs all the tests. You can also specify a particular test, like so:
 ## To Do
 
 - [ ] Complete toolkit
+- [ ] Docs and PyPI submission
 - [ ] Write example app
