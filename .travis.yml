@@ -6,3 +6,6 @@ python:
   
 install:
   - pip install pyk
+
+script:
+  - true
