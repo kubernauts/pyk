@@ -1,5 +1,10 @@
 # pyk: a simple, yet useful Kubernetes toolkit in Python
 
+
+![https://img.shields.io/pypi/v/pyk.svg](https://pypi.python.org/pypi/pyk/)
+
+![https://img.shields.io/pypi/dm/pyk.svg](https://pypi.python.org/pypi/pyk/)
+
 This is a simple, yet useful toolkit that supports you in writing microservices-style apps with Kubernetes. 
 
 The pyk toolkit is meant to be used by tools such as [kploy](https://github.com/mhausenblas/kploy) or from your own app.
@@ -13,6 +18,8 @@ It is manifest-oriented, that is, it expects the resource definitions in YAML fi
 - create a service: `create_svc(manifest_filename, namespace='default')`
 
 ## Dependencies
+
+All of these are included in the [setup](setup.py):
 
 * Python [Requests](http://docs.python-requests.org/en/latest/) (note: I've tested with version `2.6.2`)
 * Python [PyYAML](http://pyyaml.org/wiki/PyYAML) (note: I've tested with version `3.11`)
@@ -76,6 +83,6 @@ Above runs all the tests. You can also specify a particular test, like so:
 
 ## To Do
 
-- [ ] Use in kploy
+- [x] Use in kploy
+- [x] Docs and PyPI submission
 - [ ] Add Travis build
-- [ ] Docs and PyPI submission
