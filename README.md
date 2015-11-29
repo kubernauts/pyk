@@ -1,9 +1,7 @@
 # pyk: a simple, yet useful Kubernetes toolkit in Python
 
-
-![https://img.shields.io/pypi/v/pyk.svg](https://pypi.python.org/pypi/pyk/)
-
-![https://img.shields.io/pypi/dm/pyk.svg](https://pypi.python.org/pypi/pyk/)
+![version](https://img.shields.io/pypi/v/pyk.svg "https://pypi.python.org/pypi/pyk/")
+![downloads](https://img.shields.io/pypi/dm/pyk.svg "https://pypi.python.org/pypi/pyk/")
 
 This is a simple, yet useful toolkit that supports you in writing microservices-style apps with Kubernetes. 
 
@@ -85,4 +83,4 @@ Above runs all the tests. You can also specify a particular test, like so:
 
 - [x] Use in kploy
 - [x] Docs and PyPI submission
-- [ ] Add Travis build
+- [x] Add Travis build
