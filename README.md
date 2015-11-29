@@ -1,7 +1,8 @@
 # pyk: a simple, yet useful Kubernetes toolkit in Python
 
-![version](https://img.shields.io/pypi/v/pyk.svg "https://pypi.python.org/pypi/pyk/")
-![downloads](https://img.shields.io/pypi/dm/pyk.svg "https://pypi.python.org/pypi/pyk/")
+[![version](https://img.shields.io/pypi/v/pyk.svg)](https://pypi.python.org/pypi/pyk/)
+[![downloads](https://img.shields.io/pypi/dm/pyk.svg)](https://pypi.python.org/pypi/pyk/")
+[![build status](https://travis-ci.org/mhausenblas/pyk.svg?branch=master)](https://travis-ci.org/mhausenblas/pyk)
 
 This is a simple, yet useful toolkit that supports you in writing microservices-style apps with Kubernetes. 
 
@@ -78,9 +79,3 @@ Above runs all the tests. You can also specify a particular test, like so:
       ]
     }
     2015-11-28T05:13:18 /api/v1/namespaces/default/endpoints/webserver-svc ->
-
-## To Do
-
-- [x] Use in kploy
-- [x] Docs and PyPI submission
-- [x] Add Travis build
