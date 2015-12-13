@@ -21,8 +21,8 @@ def serialize_yaml_tofile(filename, resource):
     """
     Serializes a K8S resource to YAML-formatted file.
     """
-    with open(filename) as f:
-        f.write(yaml.dump(resource, default_flow_style=False))
+    stream = file(filename, "w")
+    yaml.dump(resource, stream, default_flow_style=False)
 
 def serialize_tojson(resource):
     """
