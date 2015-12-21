@@ -94,7 +94,7 @@ class KubeHTTPClient(object):
             rc_url = res.json()["metadata"]["selfLink"]
         except KeyError:
             raise ResourceCRUDException("".join(["Sorry, can not create the RC: ", rc_manifest["metadata"]["name"], ". Maybe it exists already?"]))
-        logging.info("From %s I created the RC "%s" at %s" %(manifest_filename, rc_manifest["metadata"]["name"], rc_url))
+        logging.info("From %s I created the RC %s at %s" %(manifest_filename, rc_manifest["metadata"]["name"], rc_url))
         return (res, rc_url)
 
     def scale_rc(self, manifest_filename, namespace="default", num_replicas=0):
@@ -116,7 +116,7 @@ class KubeHTTPClient(object):
             rc_url = res.json()["metadata"]["selfLink"]
         except KeyError:
             raise ResourceCRUDException("".join(["Sorry, can not scale the RC: ", rc_manifest["metadata"]["name"]]))
-        logging.info("I scaled the RC "%s" at %s to %d replicas" %(rc_manifest["metadata"]["name"], rc_url, num_replicas))
+        logging.info("I scaled the RC %s at %s to %d replicas" %(rc_manifest["metadata"]["name"], rc_url, num_replicas))
         return (res, rc_url)
 
     def create_svc(self, manifest_filename, namespace="default"):
@@ -135,6 +135,6 @@ class KubeHTTPClient(object):
             svc_url = res.json()["metadata"]["selfLink"]
         except KeyError:
             raise ResourceCRUDException("".join(["Sorry, can not create the service: ", svc_manifest["metadata"]["name"], ". Maybe it exists already?"]))
-        logging.info("From %s I created the service "%s" at %s" %(manifest_filename, svc_manifest["metadata"]["name"], svc_url))
+        logging.info("From %s I created the service %s at %s" %(manifest_filename, svc_manifest["metadata"]["name"], svc_url))
         return (res, svc_url)
 
