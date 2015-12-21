@@ -2,11 +2,11 @@
 
 [![version](https://img.shields.io/pypi/v/pyk.svg)](https://pypi.python.org/pypi/pyk/)
 [![downloads](https://img.shields.io/pypi/dm/pyk.svg)](https://pypi.python.org/pypi/pyk/")
-[![build status](https://travis-ci.org/mhausenblas/pyk.svg?branch=master)](https://travis-ci.org/mhausenblas/pyk)
+[![build status](https://travis-ci.org/kubernauts/pyk.svg?branch=master)](https://travis-ci.org/kubernauts/pyk)
 
 This is a simple, yet useful toolkit that supports you in writing microservices-style apps with Kubernetes. 
 
-The pyk toolkit is meant to be used by tools such as [kploy](https://github.com/mhausenblas/kploy) or from your own app.
+The pyk toolkit is meant to be used by tools such as [kploy](https://github.com/kubernauts/kploy) or from your own app.
 It is manifest-oriented, that is, it expects the resource definitions in YAML files; currently pyk's API is as follows:
 
 - execute an arbitrary [operation](http://kubernetes.io/v1.1/docs/api-reference/v1/operations.html) and return the resource, if any:  `execute_operation(method='GET', ops_path='', payload='')`

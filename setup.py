@@ -8,13 +8,13 @@ except (IOError, ImportError):
 
 setup(
     name="pyk",
-    version="0.3.0",
+    version="0.3.1",
     description="A simple, yet useful Kubernetes toolkit in Python",
     long_description=long_description,
     author="Michael Hausenblas",
     author_email="michael.hausenblas@gmail.com",
     license="Apache",
-    url="https://github.com/mhausenblas/pyk",
+    url="https://github.com/kubernauts/pyk",
     keywords = ['Kubernetes', 'containers', 'appops'],
     classifiers=[
         "Development Status :: 3 - Alpha",
